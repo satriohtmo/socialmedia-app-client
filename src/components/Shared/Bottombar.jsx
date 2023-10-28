@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { sidebarLinks } from "@/constants";
+import { sidebarLinks } from "../../constants";
 import { usePathname, useRouter } from "next/navigation";
 
 export default function Bottombar() {

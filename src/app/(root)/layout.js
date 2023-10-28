@@ -8,7 +8,7 @@ import Bottombar from "@/components/Shared/Bottombar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Galaxy",
+  title: "Captiverse",
   description: "Share your universe",
 };
 
