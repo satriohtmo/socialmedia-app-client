@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
           <section className="main-container">
             <div className="w-full max-w-4xl">{children}</div>
           </section>
-          <Rightsidebar />
+          {/* <Rightsidebar /> */}
         </main>
         <Bottombar />
       </body>

@@ -2,6 +2,7 @@ import ProfileHeader from "@/components/Shared/ProfileHeader";
 import Image from "next/image";
 import { Tabs, Tabscontent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { profileTabs } from "@/constants";
+import PostCard from "@/components/Shared/PostCard";
 
 export default function User() {
   return (
@@ -20,6 +21,9 @@ export default function User() {
             ))}
           </TabsList>
         </Tabs>
+      </div>
+      <div className="mt-9">
+        <PostCard />
       </div>
     </section>
   );
