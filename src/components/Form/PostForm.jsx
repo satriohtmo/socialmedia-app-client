@@ -11,63 +11,80 @@ import FileUploader from "../Shared/FileUploader";
 import { PostValidation } from "@/lib/validation/post";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-export default function FormPost({ post }) {
+export default function FormPost({ post, edit, postId }) {
   const form = useForm({
     defaultValues: {
-      description: post ? post.description : "",
-      photo: post ? post.photo : "",
+      description: post ? postId.description : "",
+      photo: postId ? postId.photo : null,
     },
-    resolver: zodResolver(PostValidation),
   });
+  const router = useRouter();
+  console.log(postId);
 
-  async function onSubmit(values) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    // logic disini
-    // try {
-    //   const post = await axios.post(
-    //     `http://localhost:14045/api/post/`,
-    //     {
-    //       ...values,
-    //     },
-    //     {
-    //       headers: {
-    //         access_token: localStorage.getItem("access_token"),
-    //       },
-    //     }
-    //   );
-    //   if (!post) {
-    //     toast.error("try again !");
-    //   }
-    //   return post.data;
-    // } catch (err) {
-    //   return [];
-    // }
-    // export async function updateUser(id, name, address, email) {
-    //   try {
-    //     const { data } = await axios.put(
-    //       `http://localhost:14045/api/user/${id}`,
-    //       {
-    //         name,
-    //         address,
-    //         email,
-    //       },
-    //       {
-    //         headers: {
-    //           access_token: localStorage.getItem("access_token"),
-    //         },
-    //       }
-    //     );
-    //     return data.data;
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    // }
-    // console.log(values);
-    // alert("alo");
-    alert(values.description);
-  }
+  const onSubmit = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", data.photo);
+      formData.append("upload_preset", "my-uploads");
+
+      let postResponse;
+      let putResponse;
+
+      if (edit) {
+        const response = await fetch("https://api.cloudinary.com/v1_1/dqak1psvn/image/upload", {
+          method: "PUT",
+          body: formData,
+        });
+
+        const data = await response.json();
+        const uploadedFileURL = data.secure_url;
+
+        console.log("File uploaded successfully:", uploadedFileURL);
+
+        const postData = {
+          photo: uploadedFileURL,
+          description: data.description,
+        };
+
+        putResponse = await axios.put(`http://localhost:14045/api/content/${postId.id}`, postData, {
+          headers: {
+            access_token: localStorage.getItem("access_token"),
+          },
+        });
+      } else {
+        const response = await fetch("https://api.cloudinary.com/v1_1/dqak1psvn/image/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const responseData = await response.json();
+        const uploadedFileURL = responseData.secure_url;
+
+        const postData = {
+          photo: uploadedFileURL,
+          description: data.description,
+        };
+
+        postResponse = await axios.post("http://localhost:14045/api/content/", postData, {
+          headers: {
+            access_token: localStorage.getItem("access_token"),
+          },
+        });
+      }
+
+      if (postResponse || putResponse) {
+        router.push("/");
+        // console.log(serverResponse);
+      }
+
+      console.log("post created:", postResponse.data || putResponse);
+    } catch (error) {
+      console.error("Error submitting post:", error);
+      toast.error("An error occurred. Please try again.");
+    }
+  };
 
   return (
     <Form {...form}>
@@ -77,9 +94,11 @@ export default function FormPost({ post }) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Description</FormLabel>
+              <FormLabel className="shad-form_label" value={postId.description}>
+                {postId.description}
+              </FormLabel>
               <FormControl className="text-white">
-                <Textarea className="shad-textarea custom-scrollbar" {...field} />
+                <Textarea className="shad-textarea custom-scrollbar" value="akakakak" {...field} />
               </FormControl>
               <FormMessage className="text-red" />
             </FormItem>
@@ -91,10 +110,7 @@ export default function FormPost({ post }) {
           name="photo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Add Photo</FormLabel>
-              <FormControl>
-                <FileUploader fieldChange={field.onChange} mediaUrl={post?.imageUrl} />
-              </FormControl>
+              <FileUploader fieldChange={field.onChange} />
               <FormMessage className="shad-form_message" />
             </FormItem>
           )}

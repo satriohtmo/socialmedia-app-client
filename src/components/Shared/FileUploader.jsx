@@ -1,115 +1,42 @@
-import Image from "next/image";
-import React, { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { Button } from "../ui/button";
-import { convertFileToUrl } from "@/lib/utils";
+import React, { useState } from "react";
 
-const FileUploader = ({ fieldChange, mediaUrl }) => {
-  const [file, setFile] = useState([]);
-  const [fileUrl, setFileUrl] = useState(mediaUrl);
+const FileUploader = ({ fieldChange }) => {
+  const [selectedImage, setSelectedImage] = useState(null);
 
-  const onDrop = useCallback(
-    (acceptedFiles) => {
-      setFile(acceptedFiles);
-      fieldChange(acceptedFiles);
-      setFileUrl(convertFileToUrl(acceptedFiles[0]));
-    },
-    [file]
-  );
-
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept: {
-      "image/*": [".png", ".jpeg", ".jpg"],
-    },
-  });
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    fieldChange(file); // Pass the selected file to the parent component
+    setSelectedImage(URL.createObjectURL(file)); // Display the selected image
+  };
 
   return (
-    <div {...getRootProps()} className="flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer">
-      <input {...getInputProps()} className="cursor-pointer" />
+    <div className="flex flex-col items-center justify-center bg-dark-3 rounded-xl cursor-pointer">
+      <input
+        type="file"
+        id="fileInput" // Ensure the input field has an ID associated with the label
+        onChange={handleFileChange}
+        className="hidden"
+        accept="image/*"
+      />
 
-      {fileUrl ? (
-        <>
-          <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
-            <img src={fileUrl} alt="image" className="file_uploader-img" />
-          </div>
-          <p className="file_uploader-label">Click or drag photo to replace</p>
-        </>
-      ) : (
-        <div className="file_uploader-box">
-          <img src="/assets/file-upload.svg" width={100} height={77} alt="file upload" />
+      <div className="file_uploader-box">
+        {selectedImage ? (
+          <img src={selectedImage} width={200} height={150} alt="selected" />
+        ) : (
+          <>
+            <img src="/assets/file-upload.svg" width={100} height={77} alt="file upload" />
 
-          <h3 className="base-medium text-light-2 mb-2 mt-6">Drag photo here</h3>
-          <p className="text-light-4 small-regular mb-6">SVG, PNG, JPG</p>
+            <h3 className="base-medium text-light-2 mb-2 mt-6">Drag photo here</h3>
+            <p className="text-light-4 small-regular mb-6">SVG, PNG, JPG</p>
+          </>
+        )}
 
-          <Button type="button" className="shad-button_dark_4">
-            Select from computer
-          </Button>
-        </div>
-      )}
+        <label htmlFor="fileInput" className="shad-button_dark_4 text-center py-3 cursor-pointer">
+          Select from computer
+        </label>
+      </div>
     </div>
   );
 };
 
 export default FileUploader;
-
-// import React, { useCallback, useState } from "react";
-// import { FileWithPath, useDropzone } from "react-dropzone";
-// import { Button } from "@/components/ui";
-// import { convertFileToUrl } from "@/lib/utils";
-
-// const FileUploader = ({ fieldChange, mediaUrl }) => {
-//   const [file, setFile] = useState([]);
-//   const [fileUrl, setFileUrl] = useState(mediaUrl);
-
-//   const onDrop = useCallback((acceptedFiles) => {
-//     setFile(acceptedFiles);
-//     fieldChange(acceptedFiles);
-//     setFileUrl(convertFileToUrl(acceptedFiles[0]));
-//   }, [file]);
-
-//   const { getRootProps, getInputProps } = useDropzone({
-//     onDrop,
-//     accept: {
-//       "image/*": [".png", ".jpeg", ".jpg"],
-//     },
-//   });
-
-//   return (
-//     <div
-//       {...getRootProps()}
-//       className="flex flex-center flex-col bg-dark-3 rounded-xl cursor-pointer"
-//     >
-//       <input {...getInputProps()} className="cursor-pointer" />
-
-//       {fileUrl ? (
-//         <>
-//           <div className="flex flex-1 justify-center w-full p-5 lg:p-10">
-//             <img src={fileUrl} alt="image" className="file_uploader-img" />
-//           </div>
-//           <p className="file_uploader-label">Click or drag photo to replace</p>
-//         </>
-//       ) : (
-//         <div className="file_uploader-box">
-//           <img
-//             src="/assets/icons/file-upload.svg"
-//             width={96}
-//             height={77}
-//             alt="file upload"
-//           />
-
-//           <h3 className="base-medium text-light-2 mb-2 mt-6">
-//             Drag photo here
-//           </h3>
-//           <p className="text-light-4 small-regular mb-6">SVG, PNG, JPG</p>
-
-//           <Button type="button" className="shad-button_dark_4">
-//             Select from computer
-//           </Button>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default FileUploader;

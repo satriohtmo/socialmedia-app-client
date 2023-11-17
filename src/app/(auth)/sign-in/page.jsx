@@ -1,34 +1,47 @@
 "use client";
 
-import { Card, Checkbox, Button, Typography } from "@material-tailwind/react";
-import Image from "next/image";
-import Link from "next/link";
-// import { useEffect, useState } from "react";
-// import { login } from "@/api/login";
-// import { redirect } from "next/dist/server/api-utils";
-// import { useRouter } from "next/navigation";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function SignIn() {
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [items, setItems] = useState([]);
-  // const router = useRouter();
+  const [user, setUser] = useState({
+    email: "",
+    password: "",
+  });
 
-  // function handleLogin(e) {
-  //   e.preventDefault();
-  //   login(email, password).then((response) => {
-  //     if (response) {
-  //       setItems(response);
-  //       router.push("/");
-  //     }
-  //     console.log(response);
-  //   });
-  // }
+  const [items, setItems] = useState([]);
 
-  // useEffect(() => {
-  //   localStorage.setItem("access_token", JSON.stringify(items.access_token));
-  //   console.log(items.access_token);
-  // }, [items]);
+  const router = useRouter();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser((userData) => ({ ...userData, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const userData = {
+        email: user.email,
+        password: user.password,
+      };
+
+      const serverResponse = await axios.post("http://localhost:14045/api/login", userData);
+
+      if (serverResponse) {
+        setItems(serverResponse.data);
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
+  };
+
+  useEffect(() => {
+    localStorage.setItem("access_token", items.access_token);
+  }, [items]);
 
   return (
     <section className="min-h-screen flex items-center justify-center">
@@ -38,10 +51,10 @@ export default function SignIn() {
           <h2 className="text-light-1 font-bold text-heading2-bold">Sign-In</h2>
           <p className="text-small-medium mt-4 text-light-1">If you already have account</p>
 
-          <form action="" className="flex flex-col gap-4">
-            <input className="p-2 mt-8 rounded-xl border" type="text" name="email" placeholder="Email.." />
+          <form action="" className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <input className="p-2 mt-8 rounded-xl border" type="text" name="email" placeholder="Email" value={user.email} onChange={handleChange} />
             <div>
-              <input className="p-2 rounded-lg border w-full" type="password" name="password" placeholder="Password.." />
+              <input className="p-2 rounded-lg border w-full" type="password" name="password" placeholder="Password" value={user.password} onChange={handleChange} />
             </div>
             <button className="bg-gray-1 rounded-lg text-dark-1 py-2 hover:scale-105 duration-300" type="submit">
               Submit
