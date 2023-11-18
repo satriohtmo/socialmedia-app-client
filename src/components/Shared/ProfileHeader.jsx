@@ -39,9 +39,6 @@ export default function ProfileHeader() {
 
   const ownProfile = users && users.username === userLogin.username;
 
-  console.log(users.username, userLogin.username);
-  // console.log(datas);
-
   const handleFollow = async () => {
     // Logic for following action goes here
     // You might want to implement the functionality to follow/unfollow users

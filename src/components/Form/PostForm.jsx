@@ -12,16 +12,24 @@ import { PostValidation } from "@/lib/validation/post";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default function FormPost({ post, edit, postId }) {
+export default function FormPost({ post }) {
   const form = useForm({
     defaultValues: {
-      description: post ? postId.description : "",
-      photo: postId ? postId.photo : null,
+      description: "",
+      photo: null,
     },
   });
   const router = useRouter();
-  console.log(postId);
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("access_token");
+
+    if (!isLoggedIn) {
+      router.push("/sign-in");
+    }
+  }, []);
 
   const onSubmit = async (data) => {
     try {
@@ -32,51 +40,27 @@ export default function FormPost({ post, edit, postId }) {
       let postResponse;
       let putResponse;
 
-      if (edit) {
-        const response = await fetch("https://api.cloudinary.com/v1_1/dqak1psvn/image/upload", {
-          method: "PUT",
-          body: formData,
-        });
+      const response = await fetch("https://api.cloudinary.com/v1_1/dqak1psvn/image/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-        const data = await response.json();
-        const uploadedFileURL = data.secure_url;
+      const responseData = await response.json();
+      const uploadedFileURL = responseData.secure_url;
 
-        console.log("File uploaded successfully:", uploadedFileURL);
+      const postData = {
+        photo: uploadedFileURL,
+        description: data.description,
+      };
 
-        const postData = {
-          photo: uploadedFileURL,
-          description: data.description,
-        };
+      postResponse = await axios.post("http://localhost:14045/api/content/", postData, {
+        headers: {
+          access_token: localStorage.getItem("access_token"),
+        },
+      });
 
-        putResponse = await axios.put(`http://localhost:14045/api/content/${postId.id}`, postData, {
-          headers: {
-            access_token: localStorage.getItem("access_token"),
-          },
-        });
-      } else {
-        const response = await fetch("https://api.cloudinary.com/v1_1/dqak1psvn/image/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        const responseData = await response.json();
-        const uploadedFileURL = responseData.secure_url;
-
-        const postData = {
-          photo: uploadedFileURL,
-          description: data.description,
-        };
-
-        postResponse = await axios.post("http://localhost:14045/api/content/", postData, {
-          headers: {
-            access_token: localStorage.getItem("access_token"),
-          },
-        });
-      }
-
-      if (postResponse || putResponse) {
+      if (postResponse) {
         router.push("/");
-        // console.log(serverResponse);
       }
 
       console.log("post created:", postResponse.data || putResponse);
@@ -94,9 +78,7 @@ export default function FormPost({ post, edit, postId }) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label" value={postId.description}>
-                {postId.description}
-              </FormLabel>
+              <FormLabel className="shad-form_label"></FormLabel>
               <FormControl className="text-white">
                 <Textarea className="shad-textarea custom-scrollbar" value="akakakak" {...field} />
               </FormControl>

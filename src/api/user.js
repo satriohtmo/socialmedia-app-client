@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export async function allUsers() {
+export async function allUsers(params) {
   try {
-    const { data } = await axios.get("http://localhost:14045/api/user/all");
+    const { data } = await axios.get(`http://localhost:14045/api/user/all?search=${params}`);
     return data.data;
   } catch (err) {
     console.log(err);

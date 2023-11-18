@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 import { getPost } from "@/api/post";
 import Image from "next/image";
 import { getUserByUsername } from "@/api/user";
+import { dislikeContent, likeContent, likePerContent } from "@/api/like";
 
 const PostCard = () => {
   const [contents, setContents] = useState([]);
   const [currentUserID, setCurrentUserID] = useState(null);
-  const router = useRouter();
 
   useEffect(() => {
     getPost().then((res) => {
@@ -29,6 +29,27 @@ const PostCard = () => {
     }
   }, []);
 
+  const handleLike = async (postId) => {
+    const updatedContents = contents.map((content) => {
+      if (content.id === postId) {
+        if (content.Likes.includes(currentUserID)) {
+          // User already liked the post, so dislike it
+          dislikeContent(postId);
+          // Remove current user from Likes array
+          content.Likes = content.Likes.filter((userId) => userId !== currentUserID);
+        } else {
+          // User has not liked the post, so like it
+          likeContent(postId);
+          // Add current user to Likes array
+          content.Likes.push(currentUserID);
+        }
+      }
+      return content;
+    });
+
+    setContents(updatedContents);
+  };
+
   return (
     <div className="max-w-screen-xl mx-auto">
       {contents &&
@@ -39,7 +60,6 @@ const PostCard = () => {
                 <Link href={`/user/${content.User.username}`}>
                   <img src={content.User.profilepicture} alt="creator" className="w-12 lg:w-12 lg:h-12 rounded-full" />
                 </Link>
-
                 <div className="flex flex-col">
                   <p className="base-medium lg:body-bold text-light-1">{content.User.username}</p>
                 </div>
@@ -51,21 +71,11 @@ const PostCard = () => {
             <div className="mt-4 md:mt-6">
               <p className="text-light-2 text-sm md:text-base">{content.description}</p>
             </div>
-
-            {/* <PostStats /> */}
             <div>
               <div className="flex justify-between items-center z-20 mt-4">
                 <div className="flex gap-2 mr-5">
-                  <Image src="/assets/like.svg" alt="like" width={20} height={20} className="cursor-pointer" />
-                  <p className="small-medium lg:base-medium text-light-2">{content.Likes.like}</p>
-                </div>
-
-                <div className="flex gap-2">
-                  {currentUserID === content.User.id && ( // Compare current user's ID with the post creator's ID
-                    <Link href={`/post/edit/${content.id}`}>
-                      <Image src="/assets/edit.svg" alt="edit" width={20} height={20} className="cursor-pointer" />
-                    </Link>
-                  )}
+                  <Image src={content.Likes.includes(currentUserID) ? "/assets/liked.svg" : "/assets/like.svg"} alt="like" width={20} height={20} className="cursor-pointer" onClick={() => handleLike(content.id)} />
+                  <p className="small-medium lg:base-medium text-light-2">{content.Likes.length}</p>
                 </div>
               </div>
             </div>

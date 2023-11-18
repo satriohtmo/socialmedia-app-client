@@ -6,22 +6,24 @@ import { useEffect, useState } from "react";
 
 export default function Search() {
   const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    allUsers().then((res) => {
+    allUsers(search).then((res) => {
       if (res) {
         setUsers(res);
       }
     });
-  }, []);
+  }, [search]);
+
   console.log(users);
+  console.log(search);
 
   return (
     <div className="container mx-auto pt-2">
       <div className="flex items-center justify-between border-b border-gray-300 pb-4 mb-8">
-        <input type="text" placeholder="Search..." className="border-none focus:outline-none text-lg font-medium rounded-lg px-4 py-2 bg-gray-100 w-full" />
+        <input type="text" placeholder="Search..." className="border-none focus:outline-none text-lg font-medium rounded-lg px-4 py-2 bg-gray-100 w-full" value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
-
       {users &&
         users.map((user, index) => (
           <div className="flex items-center border-b border-gray-300 pb-4 mb-4" key={index}>
@@ -35,10 +37,6 @@ export default function Search() {
             </div>
           </div>
         ))}
-
-      {/* Repeat the above div structure for multiple user search results */}
-
-      {/* Rest of the content */}
     </div>
   );
 }

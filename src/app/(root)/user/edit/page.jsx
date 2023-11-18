@@ -42,8 +42,6 @@ export default function EditAccount() {
     });
   }, []);
 
-  console.log(user);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
