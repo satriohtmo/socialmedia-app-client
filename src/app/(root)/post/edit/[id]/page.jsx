@@ -19,18 +19,9 @@ const EditPost = () => {
     });
   }, []);
 
-  console.log(content);
-
   return (
     <div className="flex flex-1">
       <div className="common-container -mt-10">
-        {/* <div className="max-w-5xl flex-start gap-3 justify-start w-full items-center">
-          <div className="flex items-center gap-4 mb-9">
-            <Image src="/assets/create.svg" width={36} height={36} alt="post" />
-            <h2 className="h3-bold md:h2-bold text-light-1 text-left">edit post</h2>
-          </div>
-        </div> */}
-        {/* <FormPost edit={true} postId={content} /> */}
         <EditForm postId={content} />
       </div>
     </div>

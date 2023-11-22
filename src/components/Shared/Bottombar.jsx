@@ -19,8 +19,6 @@ export default function Bottombar() {
     });
   }, []);
 
-  // console.log(users);
-
   const sidebarLinks = [
     {
       imgURL: "/assets/home.svg",
@@ -34,7 +32,7 @@ export default function Bottombar() {
     },
     {
       imgURL: "/assets/heart.svg",
-      route: "/activity",
+      route: "/post/likes",
       label: "Activity",
     },
     {

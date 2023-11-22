@@ -17,9 +17,6 @@ export default function EditForm({ postId }) {
     setContent((postData) => ({ ...postData, [name]: value }));
   };
 
-  console.log(postId);
-  console.log(content);
-
   useEffect(() => {
     if (postId.description) {
       setContent((prevContent) => ({

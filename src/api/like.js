@@ -38,3 +38,16 @@ export async function likePerContent(id) {
     return [];
   }
 }
+
+export async function likedContentByUser() {
+  try {
+    const { data } = await axios.get("http://localhost:14045/api/like", {
+      headers: {
+        access_token: localStorage.getItem("access_token"),
+      },
+    });
+    return data.data;
+  } catch (err) {
+    return [];
+  }
+}

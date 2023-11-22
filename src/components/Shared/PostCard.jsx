@@ -1,16 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import PostStats from "./PostStats";
-import { useRouter } from "next/navigation";
-import { getPost } from "@/api/post";
 import Image from "next/image";
+import { getPost } from "@/api/post";
 import { getUserByUsername } from "@/api/user";
-import { dislikeContent, likeContent, likePerContent } from "@/api/like";
+import { dislikeContent, likeContent } from "@/api/like";
+import Modal from "./Modal";
 
 const PostCard = () => {
   const [contents, setContents] = useState([]);
   const [currentUserID, setCurrentUserID] = useState(null);
+  const [modalContent, setModalContent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     getPost().then((res) => {
@@ -50,6 +51,15 @@ const PostCard = () => {
     setContents(updatedContents);
   };
 
+  const openModal = (contents) => {
+    setModalContent(contents);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="max-w-screen-xl mx-auto">
       {contents &&
@@ -65,22 +75,31 @@ const PostCard = () => {
                 </div>
               </div>
             </div>
-            <Link href={`/post/${content.id}`}>
-              <img src={content.photo} alt="post" className="post-card_img mt-4 rounded-md" style={{ width: "100%", height: "auto" }} />
-            </Link>
-            <div className="mt-4 md:mt-6">
-              <p className="text-light-2 text-sm md:text-base">{content.description}</p>
+            <div onClick={() => openModal(content)}>
+              <img src={content.photo} alt="post" className="post-card_img mt-4 rounded-md cursor-pointer" />
             </div>
-            <div>
-              <div className="flex justify-between items-center z-20 mt-4">
-                <div className="flex gap-2 mr-5">
+            <div className="mt-4 md:mt-6 ">
+              <p className="text-light-2 text-sm md:text-base mb-2">{content.description}</p>
+              <div className="flex justify-between items-center z-20  border-t border-gray-300">
+                <div className="flex gap-2 mr-5 mt-2">
                   <Image src={content.Likes.includes(currentUserID) ? "/assets/liked.svg" : "/assets/like.svg"} alt="like" width={20} height={20} className="cursor-pointer" onClick={() => handleLike(content.id)} />
-                  <p className="small-medium lg:base-medium text-light-2">{content.Likes.length}</p>
+                  <Link href={`/post/${content.id}`}>
+                    <Image src="/assets/comment.svg" alt="comment" width={29} height={25} className="cursor-pointer" />
+                  </Link>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  {currentUserID === content.User.id && (
+                    <Link href={`/post/edit/${content.id}`}>
+                      <Image src="/assets/edit.svg" alt="edit" width={20} height={20} className="cursor-pointer" />
+                    </Link>
+                  )}
                 </div>
               </div>
+              <p className="subtle-medium lg:subtle-medium text-light-2 ml-1 mt-0.5">{content.Likes.length} likes</p>
             </div>
           </div>
         ))}
+      <Modal isOpen={isModalOpen} onClose={closeModal} content={modalContent} />
     </div>
   );
 };

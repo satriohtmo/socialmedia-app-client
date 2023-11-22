@@ -1,6 +1,6 @@
 "use client";
 
-import { sumFollow } from "@/api/follow";
+import { following, getFollowers, getFollowing, sumFollow, unfollow } from "@/api/follow";
 import { getUserByName, getUserByUsername } from "@/api/user";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -10,6 +10,9 @@ export default function ProfileHeader() {
   const [users, setUsers] = useState([]);
   const [datas, setDatas] = useState([]);
   const [userLogin, setUserLogin] = useState([]);
+  const [sum, setSum] = useState([]);
+  const [userFollowing, setUserFollwing] = useState("");
+  const [userFollowers, setUserFollowers] = useState("");
   const { username } = useParams();
 
   useEffect(() => {
@@ -22,7 +25,17 @@ export default function ProfileHeader() {
 
         const sumData = await sumFollow();
         if (sumData) {
-          setDatas(sumData);
+          setDatas(setSum);
+        }
+
+        const userFollowing = await getFollowing(userData.id);
+        if (userFollowing) {
+          setUserFollwing(userFollowing);
+        }
+
+        const userFollowers = await getFollowers(userData.id);
+        if (userFollowers) {
+          setUserFollowers(userFollowers);
         }
 
         const userLogin = await getUserByUsername();
@@ -37,12 +50,37 @@ export default function ProfileHeader() {
     fetchData();
   }, []);
 
-  const ownProfile = users && users.username === userLogin.username;
+  const ownProfile = users?.username === userLogin?.username;
 
   const handleFollow = async () => {
-    // Logic for following action goes here
-    // You might want to implement the functionality to follow/unfollow users
-    // based on the current state
+    try {
+      const userId = userLogin && userLogin.id;
+      const isFollowing = datas && datas.isFollowing;
+
+      if (isFollowing) {
+        await unfollow(users.id);
+        setDatas((prevData) => ({
+          ...prevData,
+          isFollowing: false,
+        }));
+        const followingData = await getFollowing(users.id); // Fetch following after unfollow
+        setUserFollwing(followingData || []);
+        const followersData = await getFollowers(users.id);
+        setUserFollowers(followersData);
+      } else {
+        await following(users.id, userId);
+        setDatas((prevData) => ({
+          ...prevData,
+          isFollowing: true,
+        }));
+        const followingData = await getFollowing(users.id); // Fetch following after follow
+        setUserFollwing(followingData || []);
+        const followersData = await getFollowers(users.id);
+        setUserFollowers(followersData);
+      }
+    } catch (error) {
+      console.error("Error handling follow action:", error);
+    }
   };
 
   return (
@@ -85,16 +123,20 @@ export default function ProfileHeader() {
             </div>
 
             {/* Followers */}
-            <div className="flex flex-col items-center ml-8">
+            {/* <div className="flex flex-col items-center ml-8"> */}
+            <Link href={`/user/followers/${users.username}`} className="flex flex-col items-center ml-8">
               <p className="text-lg font-bold text-light-1">Followers</p>
-              <p className="text-2xl font-semibold text-light-1">{datas && datas.followersCount ? datas.followersCount : 0}</p>
-            </div>
+              <p className="text-2xl font-semibold text-light-1">{userFollowers ? userFollowers.length : 0}</p>
+            </Link>
+            {/* </div> */}
 
             {/* Following */}
-            <div className="flex flex-col items-center ml-8">
+            {/* <div className="flex flex-col items-center ml-8"> */}
+            <Link href={`/user/following/${users.username}`} className="flex flex-col items-center ml-8">
               <p className="text-lg font-bold text-light-1">Following</p>
-              <p className="text-2xl font-semibold text-light-1">{datas && datas.followingCount ? datas.followingCount : 0}</p>
-            </div>
+              <p className="text-2xl font-semibold text-light-1">{userFollowing ? userFollowing.length : 0}</p>
+            </Link>
+            {/* </div> */}
           </div>
           <p className="mt-6 max-w-lg text-base-regular text-light-2">{users.bio}</p>
 

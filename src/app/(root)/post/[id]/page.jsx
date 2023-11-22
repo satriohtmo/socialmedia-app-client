@@ -1,6 +1,7 @@
 "use client";
 
 import { contentById } from "@/api/post";
+import PostDetail from "@/components/PostDetail/PostDetail";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -12,17 +13,13 @@ const PostId = () => {
     contentById(id).then((res) => {
       if (res) {
         setContents(res);
-        console.log(res);
-        console.log(contents);
       }
     });
   }, []);
 
-  console.log(contents);
-
   return (
-    <div>
-      <h1>post detail</h1>
+    <div className="container mx-auto mt-8">
+      <PostDetail postDetail={contents} />
     </div>
   );
 };

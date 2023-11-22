@@ -43,8 +43,8 @@ export default function Leftsidebar() {
     },
     {
       imgURL: "/assets/heart.svg",
-      route: "/create-post",
-      label: "Activity",
+      route: "/post/likes",
+      label: "likes",
     },
     {
       imgURL: "/assets/create.svg",

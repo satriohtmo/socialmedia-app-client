@@ -25,6 +25,8 @@ export default function RootLayout({ children }) {
           {/* <Rightsidebar /> */}
         </main>
         <Bottombar />
+        {/* Portal container for modal */}
+        <div id="modal-root"></div>
       </body>
     </html>
   );
