@@ -34,7 +34,7 @@ export default function EditForm({ postId }) {
         description: content.description,
       };
 
-      const serverResponse = await axios.put(`http://localhost:14045/api/content/${postId.id}`, postData, {
+      const serverResponse = await axios.put(`https://captiverse-app.up.railway.app/api/content/${postId.id}`, postData, {
         headers: {
           access_token: localStorage.getItem("access_token"),
         },
@@ -43,10 +43,8 @@ export default function EditForm({ postId }) {
       if (serverResponse) {
         router.push(`/`);
       }
-
-      console.log("Content has updated:", serverResponse.data);
     } catch (error) {
-      console.error("Error update content:", error);
+      return [];
     }
   };
 

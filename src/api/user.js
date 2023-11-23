@@ -2,52 +2,52 @@ import axios from "axios";
 
 export async function allUsers(params) {
   try {
-    const { data } = await axios.get(`http://localhost:14045/api/user/all?search=${params}`);
+    const { data } = await axios.get(`https://captiverse-app.up.railway.app/api/user/all?search=${params}`);
     return data.data;
   } catch (err) {
-    console.log(err);
+    return [];
   }
 }
 
 export async function getUser(id) {
   try {
-    const { data } = await axios.get(`http://localhost:14045/api/user/${id}`, {
+    const { data } = await axios.get(`https://captiverse-app.up.railway.app/api/user/${id}`, {
       headers: {
         access_token: localStorage.getItem("access_token"),
       },
     });
     return data.data;
   } catch (err) {
-    console.log(err);
+    return [];
   }
 }
 
 export async function getUserByUsername() {
   try {
-    const { data } = await axios.get(`http://localhost:14045/api/user/`, {
+    const { data } = await axios.get(`https://captiverse-app.up.railway.app/api/user/`, {
       headers: {
         access_token: localStorage.getItem("access_token"),
       },
     });
     return data.data;
   } catch (err) {
-    console.log(err);
+    return [];
   }
 }
 
 export async function getUserByName(username) {
   try {
-    const { data } = await axios.get(`http://localhost:14045/api/user/${username}`);
+    const { data } = await axios.get(`https://captiverse-app.up.railway.app/api/user/${username}`);
     return data.data;
   } catch (err) {
-    console.log(err);
+    return [];
   }
 }
 
 export async function updateUser(username, name, email, bio, profilepicture) {
   try {
     const { data } = await axios.put(
-      `http://localhost:14045/api/user/`,
+      `https://captiverse-app.up.railway.app/api/user/`,
       {
         username,
         name,
@@ -64,19 +64,19 @@ export async function updateUser(username, name, email, bio, profilepicture) {
     );
     return data.data;
   } catch (err) {
-    console.log(err);
+    return [];
   }
 }
 
-export async function deleteUser(id) {
+export async function deleteUser() {
   try {
-    await axios.delete(`http://localhost:14045/api/user/${id}`, {
+    await axios.delete(`https://captiverse-app.up.railway.app/api/user/`, {
       headers: {
         access_token: localStorage.getItem("access_token"),
       },
     });
     return;
   } catch (err) {
-    console.log(err);
+    return [];
   }
 }

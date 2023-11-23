@@ -66,7 +66,7 @@ export default function EditAccount() {
         bio: user.bio,
       };
 
-      const serverResponse = await axios.put("http://localhost:14045/api/user/", userData, {
+      const serverResponse = await axios.put("https://captiverse-app.up.railway.app/api/user/", userData, {
         headers: {
           access_token: localStorage.getItem("access_token"),
         },
@@ -75,10 +75,8 @@ export default function EditAccount() {
       if (serverResponse) {
         router.push(`/user/${user.username}`);
       }
-
-      console.log("Account has updated:", serverResponse.data);
     } catch (error) {
-      console.error("Error update account:", error);
+      return [];
     }
   };
 
@@ -131,7 +129,7 @@ export default function EditAccount() {
             <label className="text-gray-400" htmlFor="email">
               Bio
             </label>
-            <input className="p-2 rounded-xl border" type="bio" name="bio" placeholder="Bio" value={user.bio} onChange={handleChange} id="bio" />
+            <input className="p-2 rounded-xl border" type="bio" name="bio" placeholder="Bio" value={user.bio || ""} onChange={handleChange} id="bio" />
 
             <button className="bg-gray-1 rounded-lg text-dark-1 py-2 hover:scale-105 duration-300 mt-5" type="submit">
               Submit

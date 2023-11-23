@@ -3,11 +3,13 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getUserByUsername } from "@/api/user";
+import { useRouter } from "next/navigation";
 
 const Topbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [users, setUsers] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     getUserByUsername().then((res) => {
@@ -22,6 +24,7 @@ const Topbar = () => {
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
+    router.push("/sign-in");
     setShowDropdown(false);
   };
 

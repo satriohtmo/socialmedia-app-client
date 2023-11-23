@@ -2,19 +2,15 @@
 
 import { Button } from "../ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-// import { Input } from "../ui/input";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UserValidation } from "../../lib/validation/user";
 import { Textarea } from "../ui/textarea";
 import FileUploader from "../Shared/FileUploader";
-import { PostValidation } from "@/lib/validation/post";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function FormPost({ post }) {
+export default function FormPost() {
   const form = useForm({
     defaultValues: {
       description: "",
@@ -53,7 +49,7 @@ export default function FormPost({ post }) {
         description: data.description,
       };
 
-      postResponse = await axios.post("http://localhost:14045/api/content/", postData, {
+      postResponse = await axios.post("https://captiverse-app.up.railway.app/api/content/", postData, {
         headers: {
           access_token: localStorage.getItem("access_token"),
         },

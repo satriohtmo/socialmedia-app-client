@@ -16,7 +16,6 @@ export default function Likes() {
     }
     likedContentByUser().then((res) => {
       if (res) {
-        console.log(res);
         setContent(res);
       }
     });
